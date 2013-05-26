@@ -1,0 +1,23 @@
+OPTIMIZE = -O2
+DEFS =
+LIBS =
+F_CPU=16000000L
+CC = avr-gcc
+TOP := $(dir $(lastword $(MAKEFILE_LIST)))
+CFLAGS = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -DF_CPU=$(F_CPU) -I$(TOP)/inc -ffunction-sections
+LDFLAGS = -Wl,-Map,$(PRG).map -Wl,--gc-sections
+OBJCOPY = avr-objcopy
+OBJDUMP = avr-objdump
+all: $(PRG).elf
+$(PRG).elf: $(OBJ)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+$(PRG).o: $(PRG).c
+clean:
+	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak
+	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES) $(OBJ)
+hex: $(PRG).hex
+%.hex: %.elf
+	$(OBJCOPY) -j .text -j .data -O ihex $< $@
+
+upload-%: %.hex
+	avrdude -c arduino -p m168 -P /dev/ttyUSB0 -b 19200 -U "flash:w:$<"
