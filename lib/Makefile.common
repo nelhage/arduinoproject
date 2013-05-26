@@ -1,21 +1,19 @@
-OPTIMIZE = -O2
+OPTIMIZE = -Os
 DEFS =
 LIBS =
+MCU_TARGET = atmega168
 F_CPU=16000000L
 CC = avr-gcc
 TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 CFLAGS = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -DF_CPU=$(F_CPU) -I$(TOP)/inc -ffunction-sections
-LDFLAGS = -Wl,-Map,$(PRG).map -Wl,--gc-sections
+LDFLAGS = -Wl,--gc-sections
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
-all: $(PRG).elf
-$(PRG).elf: $(OBJ)
+%.elf: %.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
-$(PRG).o: $(PRG).c
 clean:
-	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak
-	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES) $(OBJ)
-hex: $(PRG).hex
+	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak *.hex *.elf
+	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 

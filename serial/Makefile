@@ -1,4 +1,7 @@
-MCU_TARGET = atmega168
-PRG=serial
-OBJ=$(PRG).o $(TOP)/serial.o
+all: serial.hex
+
+serial.elf: ../lib/serial.o
+
 include ../lib/Makefile.common
+
+.PRECIOUS: serial.o
