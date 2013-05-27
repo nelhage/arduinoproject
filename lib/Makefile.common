@@ -5,8 +5,9 @@ MCU_TARGET = atmega168
 F_CPU=16000000L
 CC = avr-gcc
 TOP := $(dir $(lastword $(MAKEFILE_LIST)))
-CFLAGS = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -DF_CPU=$(F_CPU) -I$(TOP)/inc -ffunction-sections
-LDFLAGS = -Wl,--gc-sections
+CFLAGS = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -DF_CPU=$(F_CPU) -I$(TOP)/inc
+ASFLAGS = -mmcu=$(MCU_TARGET) -I. -x assembler-with-cpp
+LDFLAGS = 
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 %.elf: %.o
@@ -15,7 +16,11 @@ clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak *.hex *.elf
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 %.hex: %.elf
+	avr-size --mcu=$(MCU_TARGET) -C "$<"
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
 upload-%: %.hex
 	avrdude -c arduino -p m168 -P /dev/ttyUSB0 -b 19200 -U "flash:w:$<"
+
+.PRECIOUS: %.o %.elf
+
