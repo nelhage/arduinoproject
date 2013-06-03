@@ -45,7 +45,6 @@ unsigned short adc_read(unsigned char pin)
     uint16_t adc;
     while(!adc_ready);
 
-    /* must read the low ADC byte before the high ADC byte */
     adc = ADC;
     adc_ready = 0;
 
@@ -65,10 +64,7 @@ ISR(ADC_vect)
     adc_ready = 1;
 }
 
-ISR(TIMER1_COMPB_vect)
-{
-    // adc_ready = 1;
-}
+ISR(TIMER1_COMPB_vect) {}
 
 volatile uint16_t clk;
 
@@ -81,19 +77,18 @@ int main(void) {
     int i;
 
     while (1) {
+        fgetc(&uart_in);
+
         for (i = 0; i < FFT_N; ++i) {
             fft.capture[i] = adc_read(0) - (1 << 15);
         }
 
-        /*
         fft_input(fft.capture, bfly_buff);
         fft_execute(bfly_buff);
         fft_output(bfly_buff, fft.spectrum);
-        */
 
-        fgetc(&uart_in);
-        for (i = 0; i < FFT_N; ++i)
-            fprintf(&uart_out, "%4x ", fft.capture[i]);
+        for (i = 0; i < FFT_N/2; ++i)
+            fprintf(&uart_out, "%4x ", fft.spectrum[i]);
         fprintf(&uart_out, "\n");
     }
 
