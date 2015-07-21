@@ -38,30 +38,19 @@ void adc_init()
     // loop_until_bit_is_clear(ADCSRA, ADSC);
 }
 
-volatile uint8_t adc_ready = 0;
-
-unsigned short adc_read(unsigned char pin)
-{
-    uint16_t adc;
-    while(!adc_ready);
-
-    adc = ADC;
-    adc_ready = 0;
-
-    return adc;
-}
-
 static complex_t bfly_buff[FFT_N];
-static union {
+static struct {
     int16_t capture[FFT_N];
+    uint8_t next;
     uint16_t spectrum[FFT_N/2];
 } fft;
 
 static FILE uart_out, uart_in;
 
+
 ISR(ADC_vect)
 {
-    adc_ready = 1;
+    fft.capture[fft.next++ % FFT_N] = ADC - (1 << 15);
 }
 
 ISR(TIMER1_COMPB_vect) {}
@@ -79,11 +68,9 @@ int main(void) {
     while (1) {
         fgetc(&uart_in);
 
-        for (i = 0; i < FFT_N; ++i) {
-            fft.capture[i] = adc_read(0) - (1 << 15);
-        }
-
+        cli();
         fft_input(fft.capture, bfly_buff);
+        sei();
         fft_execute(bfly_buff);
         fft_output(bfly_buff, fft.spectrum);
 
