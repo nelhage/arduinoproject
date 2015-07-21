@@ -7,9 +7,10 @@ CC = avr-gcc
 TOP := $(dir $(lastword $(MAKEFILE_LIST)))
 CFLAGS = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -DF_CPU=$(F_CPU) -I$(TOP)/inc
 ASFLAGS = -mmcu=$(MCU_TARGET) -I. -x assembler-with-cpp
-LDFLAGS = 
+LDFLAGS =
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
+DEVICE = /dev/ttyUSB0
 %.elf: %.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 clean:
@@ -21,7 +22,6 @@ clean:
 
 upload-%: %.hex
 	screen -S arduino -X kill || :
-	avrdude -c arduino -p m168 -P /dev/ttyUSB0 -b 19200 -U "flash:w:$<"
+	avrdude -c arduino -p m168 -P $(DEVICE) -b 19200 -U "flash:w:$<"
 
 .PRECIOUS: %.o %.elf
-
