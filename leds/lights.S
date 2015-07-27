@@ -22,11 +22,11 @@ byte:
         breq high0      // 1/2
 
         ldi r19, 1      // 1
-        mov r0, r0      // 1
-        mov r0, r0      // 1
-        mov r0, r0      // 1
-        mov r0, r0      // 1
-        mov r0, r0      // 1
+        nop             // 1
+        nop             // 1
+        nop             // 1
+        nop             // 1
+        nop             // 1
 
 high0:
         cbi _SFR_IO_ADDR(PORTB), 0    // 2      LOW
@@ -35,14 +35,14 @@ high0:
         and r19, r19    // 1
         brne low1       // 1/2
 
-        mov r0, r0      // 1
-        mov r0, r0      // 1
-        mov r0, r0      // 1
-        mov r0, r0      // 1
+        nop             // 1
+        nop             // 1
+        nop             // 1
+        nop             // 1
 
 low1:
-        mov r0, r0      // 1
-        mov r0, r0      // 1
+        nop             // 1
+        nop             // 1
 
         dec r20         // 1
         brne byte       // 1/2
