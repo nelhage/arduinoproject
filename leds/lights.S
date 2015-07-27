@@ -10,7 +10,7 @@ top\col:
 
         // zero = 6 ; one = 11
         ldi r19, 0      // 1
-        lsl r18         // 1
+        lsr r18         // 1
         breq high0\col  // 1/2
 
         ldi r19, 1      // 1

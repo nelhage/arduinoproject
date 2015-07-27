@@ -23,9 +23,13 @@ extern void lightit(uint32_t rgb);
 int main(void)
 {
     DDRB = 0xFF;
+    uint8_t i = 0;
     while(1) {
-        lightit(0xc00000);
-        _delay_us(100);
+        lightit((((uint32_t)i) << 16) |
+                (((uint32_t)i) << 8) |
+                (((uint32_t)i) << 0));
+        i++;
+        _delay_ms(100);
     }
     return 0;
 }
