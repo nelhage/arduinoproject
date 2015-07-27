@@ -18,17 +18,24 @@
  * GRB; MSB first
  */
 
-extern void lightit(uint32_t rgb);
+extern void lightit(uint8_t *data, uint8_t cnt);
+uint8_t colors[] = {
+    // G  R     B
+    0x80, 0x00, 0x00,
+    0x70, 0x00, 0x00,
+    0x60, 0x00, 0x00,
+    0x50, 0x00, 0x00,
+    0x40, 0x00, 0x00,
+    0x30, 0x00, 0x00,
+    0x20, 0x00, 0x00,
+    0x10, 0x00, 0x00,
+};
 
 int main(void)
 {
     DDRB = 0xFF;
-    uint8_t i = 0;
     while(1) {
-        lightit((((uint32_t)i) << 16) |
-                (((uint32_t)i) << 8) |
-                (((uint32_t)i) << 0));
-        i++;
+        lightit(colors, sizeof(colors));
         _delay_ms(100);
     }
     return 0;
