@@ -19,31 +19,38 @@
  */
 
 extern void lightit(uint8_t *data, uint8_t cnt);
-uint8_t colors[] = {
+uint8_t colors[8*3];
+/*= {
     // G  R     B
     0x00, 0x00, 0x00,
     0x00, 0x00, 0x00,
-    /*
     0x80, 0x80, 0x80,
     0xc0, 0xc0, 0xc0,
     0xff, 0xff, 0xff,
-    */
 };
+*/
 
 int main(void)
 {
     DDRB = 0xFF;
-    DDRD &= ~_BV(PD2);
     while(1) {
-        if (PIND & _BV(PD2)) {
-            colors[0] = colors[1] = colors[2] = 0x40;
-            colors[3] = colors[4] = colors[5] = 0x00;
-        } else {
-            colors[0] = colors[1] = colors[2] = 0x00;
-            colors[3] = colors[4] = colors[5] = 0x40;
+        uint8_t i;
+        for (i = 0; i != 255; ++i) {
+            int b;
+            for (b = 0; b < 8; b++) {
+                if (i & (1<<b)) {
+                    colors[3*b + 0] = 0xff;
+                    colors[3*b + 1] = 0xff;
+                    colors[3*b + 2] = 0xff;
+                } else {
+                    colors[3*b + 0] = 0x00;
+                    colors[3*b + 1] = 0x00;
+                    colors[3*b + 2] = 0x00;
+                }
+            }
+            lightit(colors, sizeof(colors));
+            _delay_ms(500);
         }
-        lightit(colors, sizeof(colors));
-        _delay_ms(100);
     }
     return 0;
 }
