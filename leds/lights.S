@@ -18,8 +18,8 @@ byte:
 
         // zero = 6 ; one = 11
         ldi r19, 0      // 1
-        lsr r18         // 1
-        breq high0      // 1/2
+        lsl r18         // 1
+        brcc high0      // 1/2
 
         ldi r19, 1      // 1
         nop             // 1
