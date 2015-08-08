@@ -34,7 +34,9 @@ void step_automaton(uint8_t automaton,
 
             debug("i=%d j=%d bits=%d on=%d\n", i, j, bits, !!(automaton & (1 << bits)));
 
-            o |= (!!(automaton & (1 << bits))) << j;
+            if ((automaton & (1 << bits))) {
+                o |= 1 << j;
+            }
             state >>= 1;
         }
         debug("i=%d in=%x out=%x\n", i, in[i], o);
@@ -43,7 +45,7 @@ void step_automaton(uint8_t automaton,
 }
 
 #ifdef AUTOMATON_SELFTEST
-#define N 4
+#define N 8
 
 int main(void) {
     uint8_t in[N], out[N];
@@ -55,7 +57,7 @@ int main(void) {
             printf("%c", (a[j/8] & (1<<(j%8))) ? 'X' : ' ');
         }
         printf("\n");
-        step_automaton((1<<1) | (1<<3) | (1<<7) | (1<<5), a, b, N);
+        step_automaton(110, a, b, N);
         uint8_t *t = a;
         a = b; b = t;
     }

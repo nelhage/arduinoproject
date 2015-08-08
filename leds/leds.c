@@ -19,7 +19,17 @@
  */
 
 extern void lightit(uint8_t *data, uint8_t cnt);
+void step_automaton(uint8_t automaton, uint8_t *in, uint8_t *out, int len);
+
 uint8_t colors[3 * 60];
+uint8_t a[8], b[8];
+struct {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+} color = {
+    50, 0, 0
+};
 
 int main(void)
 {
@@ -29,23 +39,43 @@ int main(void)
     DDRD &= ~_BV(PIND7);
     PORTD |= _BV(PIND7);
 
-    int i;
-    int offs = 0;
+    a[0] = 0x55;
+
+    uint8_t *in = a, *out = b;
+    uint8_t automaton = 110;
+
     while(1) {
-        if (!(PIND & _BV(PIND7))) {
-            for (i=0; i<60; i++) {
-                colors[3*i+0] = colors[3*i+1] = colors[3*i+2] = 0;
-            }
-        } else {
-            for (i=0; i<60; i++) {
-                colors[3*i+0] = (i+offs);
-                colors[3*i+1] = (60-i-offs);
+        step_automaton(automaton, in, out, sizeof(a));
+
+        for (int j = 0; j < 10; j++) {
+            for (int i=0; i<60; i++) {
+                int old = in[i/8] & (1 << (i%8));
+                int new = out[i/8] & (1 << (i%8));
+
+                colors[3*i+0] = 0;
+                colors[3*i+1] = 0;
                 colors[3*i+2] = 0;
+
+                if (new) {
+                    colors[3*i+0] += (color.g * j) / 9;
+                    colors[3*i+1] += (color.r * j) / 9;
+                    colors[3*i+2] += (color.b * j) / 9;
+                }
+                if (old) {
+                    colors[3*i+0] += (color.g * (9-j)) / 9;
+                    colors[3*i+1] += (color.r * (9-j)) / 9;
+                    colors[3*i+2] += (color.b * (9-j)) / 9;
+                }
             }
+
+            lightit(colors, sizeof(colors));
+            _delay_ms(100);
         }
-        lightit(colors, sizeof(colors));
-        _delay_ms(10);
-        offs++;
+
+        _delay_ms(5000);
+
+        uint8_t *t = in;
+        in = out; out = t;
     }
     return 0;
 }
