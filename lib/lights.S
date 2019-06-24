@@ -1,16 +1,34 @@
 #include <avr/io.h>
 
+/*
+ *
+ * clock = 16Mhz = 62.5 ns / clock
+ * data on PB0 = pin 8
+ *
+ *
+ * send square wave; each bit is high / low
+ *
+ * T0H = 350ns  ± 150ns  = 5.6 cycles
+ * T1H = 700ns           = 11.2 cycles
+ * T0L = 800ns           = 12.8 cycles
+ * T1L = 600ns           = 9.6 cycles
+ * TRESET = >50us
+ *
+ * GRB; MSB first
+ */
+
 .globl lightit
 lightit:
         // lightit(ptr, count)
         // ptr   == r24:r25
-        // count == r22
+        // count == r22:r23
 
         // X = ptr
         mov r26, r24
         mov r27, r25
 outer:
-
+        ldi r19, 3
+pixel:
         ld  r18, X+
         ldi r20, 8
 byte:
@@ -46,6 +64,9 @@ low1:
 
         dec r20         // 1
         brne byte       // 1/2
+
+        dec r19
+        brne pixel
 
         dec r22
         brne outer

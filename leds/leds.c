@@ -18,11 +18,13 @@
  * GRB; MSB first
  */
 
-extern void lightit(uint8_t *data, uint8_t cnt);
+extern void lightit(uint8_t *data, uint16_t cnt);
 void step_automaton(uint8_t automaton, uint8_t *in, uint8_t *out, int len);
 
-uint8_t colors[3 * 60];
-uint8_t a[8], b[8];
+#define N 120
+
+uint8_t colors[3 * N];
+uint8_t a[(N+7)/8], b[(N+7)/8];
 struct {
     uint8_t r;
     uint8_t g;
@@ -48,7 +50,7 @@ int main(void)
         step_automaton(automaton, in, out, sizeof(a));
 
         for (int j = 0; j < 10; j++) {
-            for (int i=0; i<60; i++) {
+            for (int i=0; i<N; i++) {
                 int old = in[i/8] & (1 << (i%8));
                 int new = out[i/8] & (1 << (i%8));
 
@@ -68,11 +70,10 @@ int main(void)
                 }
             }
 
-            lightit(colors, sizeof(colors));
-            _delay_ms(100);
+            lightit(colors, sizeof(colors)/3);
         }
 
-        _delay_ms(5000);
+        _delay_ms(100);
 
         uint8_t *t = in;
         in = out; out = t;
