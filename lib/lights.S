@@ -26,9 +26,10 @@ lightit:
         // X = ptr
         mov r26, r24
         mov r27, r25
+
+        mov r24, r22
+        mov r25, r23
 outer:
-        ldi r19, 3
-pixel:
         ld  r18, X+
         ldi r20, 8
 byte:
@@ -65,10 +66,7 @@ low1:
         dec r20         // 1
         brne byte       // 1/2
 
-        dec r19
-        brne pixel
-
-        dec r22
+        sbiw r24, 1
         brne outer
 
         ret
