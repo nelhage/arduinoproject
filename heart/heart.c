@@ -15,9 +15,34 @@ uint8_t sin_table[256] = {
 8, 9, 9, 10, 12, 13, 14, 15, 16, 17, 19, 20, 22, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 42, 45, 47, 49, 51, 53, 56, 58, 60, 63, 65, 68, 71, 73, 76, 79, 82, 84, 87, 90, 93, 96, 99, 102, 105, 108, 112, 115, 118, 121, 125, 128, 131, 135, 138, 141, 145, 148, 151, 155, 158, 161, 165, 168, 171, 175, 178, 181, 185, 188, 191, 194, 197, 200, 203, 206, 209, 212, 215, 218, 220, 223, 225, 228, 230, 232, 234, 237, 238, 240, 242, 244, 245, 247, 248, 249, 251, 252, 253, 253, 254, 255, 255, 255, 255
 };
 
+struct arrow {
+    int x;
+    int dx;
+    int8_t r,g,b;
+};
+
 #define NCOLOR 120
+#define NDOT   2
 
 struct light colors[NCOLOR];
+struct arrow arrows[NDOT] = {
+    {
+        0, 2,
+        5, 1, 10,
+    },
+    {
+        60, -1,
+        -5, 10, 1,
+    }
+};
+
+void saturating_add(uint8_t *dst, uint8_t add) {
+    if (*dst + add < *dst) {
+        *dst = 0xff;
+    } else {
+        *dst += add;
+    }
+}
 
 int main(void)
 {
@@ -31,12 +56,23 @@ int main(void)
     for(;;) {
         t++;
         for (int i = 0; i < NCOLOR; i++) {
-            int rate = sin_table[4*(i*256/NCOLOR)&0xff] / 20;
-            if (rate == 0) rate = 1;
-            uint8_t scale = sin_table[(uint8_t)(t*rate)];
-            colors[i].r = 128 + sin_table[scale]/4;
+            uint8_t scale = sin_table[t];
+            colors[i].r = 64 + sin_table[scale] / 2;
             colors[i].g = 0;
             colors[i].b = 16 + sin_table[scale] / 16;
+        }
+        for (int i = 0; i < NDOT; i++) {
+            struct arrow *a = &arrows[i];
+            for (int j = 0; j < 10; j++) {
+                saturating_add(&colors[(NCOLOR + a->x - j) % NCOLOR].r, a->r*(10 - j));
+                saturating_add(&colors[(NCOLOR + a->x - j) % NCOLOR].g, a->g*(10 - j));
+                saturating_add(&colors[(NCOLOR + a->x - j) % NCOLOR].b, a->b*(10 - j));
+            }
+            a->x += a->dx;
+            a->x %= NCOLOR;
+            if (a->x < 0) {
+                a->x += NCOLOR;
+            }
         }
         lightit(colors, sizeof(colors));
         _delay_ms(100);
