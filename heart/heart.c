@@ -16,29 +16,38 @@ uint8_t sin_table[256] = {
 struct arrow {
     int x;
     int dx;
-    int8_t r,g,b;
+    int r,g,b;
 };
 
 #define NCOLOR 120
-#define NDOT   2
+#define NDOT   3
 
 struct light colors[NCOLOR];
-struct arrow arrows[NDOT] = {
+struct arrow arrows[] = {
+    {
+        80, 3,
+        -8, 4, -2,
+    },
     {
         0, 2,
         5, 1, 10,
     },
     {
-        60, -1,
+        40, -1,
         -5, 10, 1,
-    }
+    },
 };
 
-void saturating_add(uint8_t *dst, uint8_t add) {
-    if (*dst + add < *dst) {
-        *dst = 0xff;
+void saturating_add(uint8_t *dst, int add) {
+    uint8_t tmp;
+    if (__builtin_add_overflow(*dst, add, &tmp)) {
+        if (add < 0) {
+            *dst = 0;
+        } else {
+            *dst = 0xff;
+        }
     } else {
-        *dst += add;
+        *dst = tmp;
     }
 }
 
@@ -55,7 +64,7 @@ int main(void)
         t++;
         for (int i = 0; i < NCOLOR; i++) {
             uint8_t scale = sin_table[t];
-            colors[i].r = 64 + sin_table[scale] / 2;
+            colors[i].r = 64 + sin_table[scale];
             colors[i].g = 0;
             colors[i].b = 16 + sin_table[scale] / 16;
         }
@@ -70,6 +79,15 @@ int main(void)
             a->x %= NCOLOR;
             if (a->x < 0) {
                 a->x += NCOLOR;
+            }
+            int r = rand() % 500;
+            if (r < 5) {
+                a->dx += rand()%3 - 1;
+            } else if (r == 6) {
+                a->dx = -a->dx;
+            }
+            if (a->dx == 0) {
+                a->dx = 1;
             }
         }
         lightit(colors, sizeof(colors));
