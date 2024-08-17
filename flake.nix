@@ -19,8 +19,9 @@
         in
         {
           default = pkgs.pkgsCross.avr.mkShell {
-            packages = [
-              pkgs.avrdude
+            packages = with pkgs; [
+              avrdude
+              emscripten
             ];
           };
         }
