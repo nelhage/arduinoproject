@@ -5,4 +5,4 @@
 
 extern struct light colors[NCOLOR];
 
-void tick(uint8_t t);
+void tick(int t);
