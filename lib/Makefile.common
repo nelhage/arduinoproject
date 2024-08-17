@@ -10,7 +10,8 @@ ASFLAGS = -mmcu=$(MCU_TARGET) -I. -x assembler-with-cpp
 LDFLAGS =
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
-DEVICE = /dev/ttyUSB0
+DEVICE = $(if $(findstring darwin,$(MAKE_HOST)),$(wildcard /dev/tty.usbserial-*),/dev/ttyUSB0)
+
 %.elf: %.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 clean:
