@@ -15,8 +15,6 @@ struct arrow {
     int r,g,b;
 };
 
-
-struct light colors[NCOLOR];
 struct arrow arrows[] = {
     {
         80, 3,

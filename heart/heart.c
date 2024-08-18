@@ -4,6 +4,7 @@
 
 #include "art.h"
 
+struct light colors[NCOLOR];
 
 int main(void)
 {
