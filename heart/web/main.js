@@ -1,9 +1,15 @@
 (() => {
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
   class Lights {
     constructor(rgb) {
       this.n_lights = rgb.length / 3;
       this.rgb = rgb;
       this.leds = null;
+      this.tickMS = 100;
+      this.clock = 0;
     }
 
     renderHtml(container) {
@@ -34,6 +40,31 @@
       }
       this.leds = leds;
     };
+
+    refresh() {
+      function rescale(channel) {
+        let raw = channel/256;
+        return 0.25 + 0.75 * channel;
+      }
+
+      let p = 0;
+      for (let i = 0; i < this.n_lights; i++) {
+        const g = rescale(this.rgb[p++]);
+        const r = rescale(this.rgb[p++]);
+        const b = rescale(this.rgb[p++]);
+
+        this.leds[i].style.backgroundColor = `rgb(${r}%, ${g}%, ${b}%)`;
+      };
+    }
+
+    async start() {
+      while (true) {
+        this.clock += 1;
+        Module._tick(this.clock & 0xffff);
+        this.refresh();
+        await sleep(this.tickMS);
+      }
+    }
   };
 
   let lights = null;
@@ -49,6 +80,8 @@
 
     const container = document.getElementById('container');
     lights.renderHtml(container);
+
+    lights.start();
 
     Module._tick(20);
   };
