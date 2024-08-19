@@ -31,7 +31,7 @@
         const y = (1 - cosphi) * cosphi;
         const x = (1 - cosphi) * sinphi;
 
-        const xScaled = 50 + 50*(x/2);
+        const xScaled = 50 - 50*(x/2);
         const yScaled = 50 - 50*((y+1)/2);
 
         led.style.left = xScaled + "%";

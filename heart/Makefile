@@ -1,8 +1,11 @@
+include ../lib/Makefile.common
+
 ART = art
 EXTRA_SRC=../lib/fast_hsv2rgb_8bit.c $(ART).c
 LIBS = ../lib/lights.o $(patsubst %.c,%.o,$(EXTRA_SRC))
 
 all: heart.hex
+heart.hex: $(LIBS)
 heart.o: CFLAGS+=-std=c11
 
 WASM_OUT := web/wasm
@@ -16,5 +19,3 @@ $(WASM_OUT)/heart.js $(WASM_OUT)/heart.wasm: wasm_iface.c $(EXTRA_SRC)
 
 wasm: $(WASM_OUT)/heart.wasm
 .PHONY: wasm
-
-include ../lib/Makefile.common
