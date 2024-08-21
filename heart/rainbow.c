@@ -4,7 +4,7 @@
 #include "fast_hsv2rgb.h"
 
 
-void tick(int t) {
+void tick(uint8_t mode, int t) {
     for (int i = 0; i < NCOLOR; i++) {
         uint16_t hue = i * (HSV_HUE_MAX/NCOLOR);
         uint8_t r, g, b;

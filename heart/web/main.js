@@ -62,7 +62,7 @@
     async start() {
       while (true) {
         this.clock += 1;
-        Module._tick(this.clock & 0xffff);
+        Module._tick(3, this.clock & 0xffff);
         this.refresh();
         await sleep(this.tickMS);
       }
@@ -84,8 +84,6 @@
     lights.renderHtml(container);
 
     lights.start();
-
-    Module._tick(20);
   };
 
   window.Module = {
