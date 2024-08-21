@@ -5,7 +5,7 @@ EXTRA_SRC=../lib/fast_hsv2rgb_8bit.c $(ART).c
 LIBS = ../lib/lights.o $(patsubst %.c,%.o,$(EXTRA_SRC))
 
 all: heart.hex
-heart.hex: $(LIBS)
+heart.elf: $(LIBS)
 heart.o: CFLAGS+=-std=c11
 
 WASM_OUT := web/wasm

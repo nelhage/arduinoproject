@@ -12,8 +12,8 @@ OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 DEVICE = $(if $(findstring darwin,$(MAKE_HOST)),$(wildcard /dev/tty.usbserial-*),/dev/ttyUSB0)
 
-%.elf: %.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+%.elf: %.o $(LIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak *.hex *.elf
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
