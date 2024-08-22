@@ -30,6 +30,9 @@ struct arrow arrows[] = {
     },
 };
 
+const int NDOT = sizeof(arrows)/sizeof(*arrows);
+
+
 void saturating_add(uint8_t *dst, int add) {
     uint8_t tmp;
     if (__builtin_add_overflow(*dst, add, &tmp)) {
