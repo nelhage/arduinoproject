@@ -4,37 +4,53 @@
 #include "fast_hsv2rgb.h"
 
 
-void tick(uint8_t mode, int t) {
+void rainbow(int t) {
+    static int phase = 0;
+    int hi = t >> 7;
+    int v = (hi & 3) - 1;
+    if (hi & 4) {
+        v = - v;
+    }
+    phase += 10 * v;
+
     for (int i = 0; i < NCOLOR; i++) {
-        uint16_t hue = i * (HSV_HUE_MAX/NCOLOR);
+        int hue = (i * (HSV_HUE_MAX/NCOLOR) + phase) % HSV_HUE_MAX;
+        if (hue < 0) {
+            hue += HSV_HUE_MAX;
+        }
         uint8_t r, g, b;
-        fast_hsv2rgb_8bit(hue, 255, 255, &r, &g, &b);
+        fast_hsv2rgb_8bit((uint16_t)hue, 255, 255, &r, &g, &b);
         colors[i].r = r;
         colors[i].g = g;
         colors[i].b = b;
     }
-    /*
-    for (int i = 0; i < NDOT; i++) {
-        struct arrow *a = &arrows[i];
-        for (int j = 0; j < 10; j++) {
-            saturating_add(&colors[(NCOLOR + a->x - j) % NCOLOR].r, a->r*(10 - j));
-            saturating_add(&colors[(NCOLOR + a->x - j) % NCOLOR].g, a->g*(10 - j));
-            saturating_add(&colors[(NCOLOR + a->x - j) % NCOLOR].b, a->b*(10 - j));
+}
+
+void twinkles(int t) {
+    int phase = t;
+    // phase += 10;
+
+    for (int i = 0; i < NCOLOR; i++) {
+        int off = (i + 2*t) % NCOLOR;
+        if (off < 0) {
+            off += NCOLOR;
         }
-        a->x += a->dx;
-        a->x %= NCOLOR;
-        if (a->x < 0) {
-            a->x += NCOLOR;
+        int hue = ((off) * (HSV_HUE_MAX/(NCOLOR*5)) + phase) % HSV_HUE_MAX;
+        if (hue < 0) {
+            hue += HSV_HUE_MAX;
         }
-        int r = rand() % 500;
-        if (r < 5) {
-            a->dx += rand()%3 - 1;
-        } else if (r == 6) {
-            a->dx = -a->dx;
-        }
-        if (a->dx == 0) {
-            a->dx = 1;
-        }
+        uint8_t r, g, b;
+        fast_hsv2rgb_8bit((uint16_t)hue, 255, 128, &r, &g, &b);
+        colors[i].r = r;
+        colors[i].g = g;
+        colors[i].b = b;
     }
-    */
+}
+
+void tick(uint8_t mode, int t) {
+    if ((mode & 3) == 3) {
+        rainbow(t);
+    } else if ((mode & 3) == 2) {
+        twinkles(t);
+    }
 }
