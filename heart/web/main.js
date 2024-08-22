@@ -6,11 +6,19 @@
   }
 
   class Lights {
-    constructor(rgb) {
+    constructor(rgb, config) {
       this.n_lights = rgb.length / 3;
       this.rgb = rgb;
       this.leds = null;
-      this.tickMS = 100;
+      this.config = config;
+      this.tickMS = config.tickMS;
+      if (this.tickMS === null) {
+        this.tickMS = 100;
+      }
+      this.mode = config.mode;
+      if (this.mode === null) {
+        this.mode = 3;
+      }
       this.clock = 0;
     }
 
@@ -62,7 +70,7 @@
     async start() {
       while (true) {
         this.clock += 1;
-        Module._tick(3, this.clock & 0xffff);
+        Module._tick(this.mode, this.clock & 0xffff);
         this.refresh();
         await sleep(this.tickMS);
       }
@@ -77,7 +85,16 @@
                                Module._colors,
                                3*num_lights);
 
-    lights = new Lights(rgb);
+    let settings = {tickMS: 100, mode: 3};
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('tick')) {
+      settings.tickMS = parseInt(params.get('tick'));
+    }
+    if (params.has('mode')) {
+      settings.mode = parseInt(params.get('mode'));
+    }
+
+    lights = new Lights(rgb, settings);
     window.lights = lights;
 
     const container = document.getElementById('container');
