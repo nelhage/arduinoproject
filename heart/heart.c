@@ -17,7 +17,7 @@ int main(void)
     // set pullup
     PORTD |= (_BV(PIND0) | _BV(PIND1));
 
-    int t = 0;
+    int16_t t = 0;
 
     for(;;) {
         t++;
