@@ -162,6 +162,58 @@ void symmetric_rainbow(int16_t t) {
 //     }
 // }
 
+struct sparkle_state {
+    uint8_t prev : 1;
+    uint8_t cur : 1;
+};
+
+struct sparkle_state is_sparkling[NCOLOR];
+
+void nipunn(int16_t t) {
+    const int hue_a = 0;
+    const int hue_b = HSV_HUE_STEPS / 2;
+    const int sparkle_nframes = 5;
+
+
+    int sparkle_no = t / sparkle_nframes;
+    int frame_in_sparkle = t % sparkle_nframes;
+
+    // 10, 9,
+    int frac_on = sparkle_no * sparkle_no;
+
+    // % of sparkly
+    // int frac_on = 50;
+
+
+    if (frame_in_sparkle == 0) {
+        for (int i = 0; i < NCOLOR; i++) {
+            is_sparkling[i].prev = is_sparkling[i].cur;
+            is_sparkling[i].cur = (rand() % 2500) < frac_on;
+        }
+    }
+
+    for (int i = 0; i < NCOLOR; i++) {
+        int cur = is_sparkling[i].cur;
+        int prev = is_sparkling[i].prev;
+
+        int hue = hue_a;
+        int prev_val = prev ? 255 : 0;
+        int dst_val = cur ? 255 : 0;
+
+        int val = prev_val + (((dst_val - prev_val) * frame_in_sparkle) / sparkle_nframes);
+
+        // = (255 * frame_in_sparkle) / sparkle_nframes;
+
+        int do_sparkle = is_sparkling[i].cur;
+
+        uint8_t r, g, b;
+        fast_hsv2rgb_8bit((uint16_t)hue, 255, val, &r, &g, &b);
+        colors[i].r = r;
+        colors[i].g = g;
+        colors[i].b = b;
+    }
+}
+
 void tick(uint8_t mode, int16_t t) {
     if ((mode & 3) == 3) {
         //purple_but_with_hsv(t);
@@ -170,6 +222,7 @@ void tick(uint8_t mode, int16_t t) {
         //symmetric_rainbow(t);
     } else if ((mode & 3) == 2) {
         purple_but_with_hsv(t);
-        //twinkles(t);
+    }  else if ((mode & 3) == 1) {
+        nipunn(t);
     }
 }
