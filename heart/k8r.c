@@ -27,7 +27,7 @@ void rainbow(int16_t t) {
 }
 
 void rainbow_ranges(int16_t t) {
-    int phase = 2 * t;
+    int phase = t;
 
     int hi = t >> 7;
     int band = hi % 6;
@@ -35,9 +35,21 @@ void rainbow_ranges(int16_t t) {
     int COLOR_RANGE = HSV_HUE_STEPS / 6;
     int COLOR_MIN = HSV_HUE_STEPS * band / 6;
 
-    for (int i = 0; i < NCOLOR/2; i++) {
+    int nslice = 12;
+    int col_per_slice = NCOLOR/nslice;
 
-        int hue_offset = (i * (COLOR_RANGE* 8/NCOLOR) + phase) % COLOR_RANGE;
+    for (int i = 0; i < NCOLOR/2; i++) {
+        int logical_pos = (i + phase) % NCOLOR;
+
+        int my_slice = logical_pos / col_per_slice;
+        int my_off = (logical_pos % col_per_slice);
+        if (my_slice % 2 == 1) {
+            my_off = col_per_slice - 1 - my_off;
+        }
+
+        int hue_offset = (my_off * COLOR_RANGE) / col_per_slice;
+        hue_offset = (hue_offset) % COLOR_RANGE;
+
         if (hue_offset < 0) {
             hue_offset += COLOR_RANGE;
         }
