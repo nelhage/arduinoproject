@@ -4,7 +4,7 @@
 
 #include "art.h"
 
-struct light colors[NCOLOR];
+struct light leds[NLED];
 uint8_t mode;
 
 int main(void)
@@ -21,7 +21,7 @@ int main(void)
         t++;
 
         tick((PINB & (0x3 << 1)) >> 1, t);
-        lightit(colors, sizeof(colors));
+        lightit(leds, NLED);
         _delay_ms(50);
     }
 

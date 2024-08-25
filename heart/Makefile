@@ -18,7 +18,7 @@ $(WASM_OUT)/heart.js $(WASM_OUT)/heart.wasm: wasm_iface.c $(EXTRA_SRC) .which_ar
 	emcc -I ../lib/inc/ \
 	     -o "${WASM_OUT}/heart.js" \
 	     $(filter-out $(WHICH_ART),$^) \
-	     -sEXPORTED_FUNCTIONS=_tick,_num_lights,_colors \
+	     -sEXPORTED_FUNCTIONS=_tick,_num_lights,_leds \
 	     -O2
 
 wasm: $(WASM_OUT)/heart.wasm

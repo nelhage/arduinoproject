@@ -47,23 +47,23 @@ void saturating_add(uint8_t *dst, int add) {
 }
 
 void tick(uint8_t mode, uint16_t t) {
-    for (int i = 0; i < NCOLOR; i++) {
+    for (int i = 0; i < NLED; i++) {
         uint8_t scale = sin_table[t & 0xff];
-        colors[i].r = 64 + sin_table[scale];
-        colors[i].g = 0;
-        colors[i].b = 16 + sin_table[scale] / 16;
+        leds[i].r = 64 + sin_table[scale];
+        leds[i].g = 0;
+        leds[i].b = 16 + sin_table[scale] / 16;
     }
     for (int i = 0; i < NDOT; i++) {
         struct arrow *a = &arrows[i];
         for (int j = 0; j < 10; j++) {
-            saturating_add(&colors[(NCOLOR + a->x - j) % NCOLOR].r, a->r*(10 - j));
-            saturating_add(&colors[(NCOLOR + a->x - j) % NCOLOR].g, a->g*(10 - j));
-            saturating_add(&colors[(NCOLOR + a->x - j) % NCOLOR].b, a->b*(10 - j));
+            saturating_add(&leds[(NLED + a->x - j) % NCOLOR].r, a->r*(10 - j));
+            saturating_add(&leds[(NLED + a->x - j) % NCOLOR].g, a->g*(10 - j));
+            saturating_add(&leds[(NLED + a->x - j) % NCOLOR].b, a->b*(10 - j));
         }
         a->x += a->dx;
-        a->x %= NCOLOR;
+        a->x %= NLED;
         if (a->x < 0) {
-            a->x += NCOLOR;
+            a->x += NLED;
         }
         int r = rand() % 500;
         if (r < 5) {

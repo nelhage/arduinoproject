@@ -5,22 +5,22 @@
 
 
 void tick(uint8_t mode, uint16_t t) {
-    for (int i = 0; i < NCOLOR; i++) {
+    for (int i = 0; i < NLED; i++) {
         switch ((t >> 7) & 0x3) {
         case 0:
-            colors[i].r = 255;
-            colors[i].g = 255;
-            colors[i].b = 255;
+            leds[i].r = 255;
+            leds[i].g = 255;
+            leds[i].b = 255;
             break;
         case 1:
-            colors[i].r = 255;
-            colors[i].g = 0;
-            colors[i].b = 0;
+            leds[i].r = 255;
+            leds[i].g = 0;
+            leds[i].b = 0;
             break;
         case 2:
-            colors[i].r = 0;
-            colors[i].g = 0;
-            colors[i].b = 0;
+            leds[i].r = 0;
+            leds[i].g = 0;
+            leds[i].b = 0;
             break;
         }
     }

@@ -82,7 +82,7 @@
   function main() {
     const num_lights = Module._num_lights();
     const rgb = new Uint8Array(Module.HEAPU8.buffer,
-                               Module._colors,
+                               Module._leds,
                                3*num_lights);
 
     let settings = {tickMS: 50, mode: 3};

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-struct light colors[NCOLOR];
+struct light leds[NLED];
 
 int num_lights() {
-    return NCOLOR;
+    return NLED;
 }
