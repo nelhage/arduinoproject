@@ -169,26 +169,30 @@ struct sparkle_state {
 
 struct sparkle_state is_sparkling[NCOLOR];
 
+static inline int lerp(int from, int to, int nstep, int step) {
+    return from + (((to - from) * step) / nstep);
+}
+
 void nipunn(int16_t t) {
     const int hue_a = 0;
     const int hue_b = HSV_HUE_STEPS / 2;
     const int sparkle_nframes = 5;
+    const int fade_nsparkles = 50;
+    const int pause_nsparkles = 5;
+
+    const int transition_nsparkles = fade_nsparkles + pause_nsparkles;
 
 
-    int sparkle_no = t / sparkle_nframes;
     int frame_in_sparkle = t % sparkle_nframes;
+    int sparkle_no = (t / sparkle_nframes) % transition_nsparkles;
+    int transition_no = t / (sparkle_nframes * transition_nsparkles);
 
-    // 10, 9,
     int frac_on = sparkle_no * sparkle_no;
-
-    // % of sparkly
-    // int frac_on = 50;
-
 
     if (frame_in_sparkle == 0) {
         for (int i = 0; i < NCOLOR; i++) {
-            is_sparkling[i].prev = is_sparkling[i].cur;
-            is_sparkling[i].cur = (rand() % 2500) < frac_on;
+            is_sparkling[i].prev = sparkle_no == 0 ? 0 : is_sparkling[i].cur;
+            is_sparkling[i].cur = (rand() % (fade_nsparkles*fade_nsparkles)) < frac_on;
         }
     }
 
@@ -196,15 +200,26 @@ void nipunn(int16_t t) {
         int cur = is_sparkling[i].cur;
         int prev = is_sparkling[i].prev;
 
-        int hue = hue_a;
-        int prev_val = prev ? 255 : 0;
-        int dst_val = cur ? 255 : 0;
+        int hue;
+        int val;
+        switch (transition_no % 2) {
+        case 0: {
+            int prev_val = prev ? 255 : 0;
+            int dst_val = cur ? 255 : 0;
 
-        int val = prev_val + (((dst_val - prev_val) * frame_in_sparkle) / sparkle_nframes);
+            hue = hue_a;
+            val = lerp(prev_val, dst_val, sparkle_nframes, frame_in_sparkle);
+            break;
+        }
+        case 1: {
+            int prev_hue = prev ? hue_b : hue_a;
+            int dst_hue = cur ? hue_b : hue_a;
 
-        // = (255 * frame_in_sparkle) / sparkle_nframes;
-
-        int do_sparkle = is_sparkling[i].cur;
+            val = 255;
+            hue = lerp(prev_hue, dst_hue, sparkle_nframes, frame_in_sparkle);
+            break;
+        }
+        }
 
         uint8_t r, g, b;
         fast_hsv2rgb_8bit((uint16_t)hue, 255, val, &r, &g, &b);
