@@ -46,7 +46,7 @@ void saturating_add(uint8_t *dst, int add) {
     }
 }
 
-void tick(uint8_t mode, int16_t t) {
+void tick(uint8_t mode, uint16_t t) {
     for (int i = 0; i < NCOLOR; i++) {
         uint8_t scale = sin_table[t & 0xff];
         colors[i].r = 64 + sin_table[scale];

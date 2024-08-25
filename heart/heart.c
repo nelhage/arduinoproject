@@ -15,7 +15,7 @@ int main(void)
     // set pullup
     PORTB |= (_BV(PINB1) | _BV(PINB2));
 
-    int16_t t = 0;
+    uint16_t t = 0;
 
     for(;;) {
         t++;

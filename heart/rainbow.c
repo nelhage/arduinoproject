@@ -4,7 +4,7 @@
 #include "fast_hsv2rgb.h"
 
 
-void rainbow(int16_t t) {
+void rainbow(uint16_t t) {
     static int phase = 0;
     int hi = t >> 7;
     int v = (hi & 3) - 1;
@@ -26,7 +26,7 @@ void rainbow(int16_t t) {
     }
 }
 
-void twinkles(int16_t t) {
+void twinkles(uint16_t t) {
     int phase = t;
     // phase += 10;
 
@@ -47,7 +47,7 @@ void twinkles(int16_t t) {
     }
 }
 
-void tick(uint8_t mode, int16_t t) {
+void tick(uint8_t mode, uint16_t t) {
     if ((mode & 3) == 3) {
         rainbow(t);
     } else if ((mode & 3) == 2) {

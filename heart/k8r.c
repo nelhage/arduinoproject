@@ -4,7 +4,7 @@
 #include "fast_hsv2rgb.h"
 
 
-void rainbow(int16_t t) {
+void rainbow(uint16_t t) {
     static int phase = 0;
     int hi = t >> 7;
     int v = (hi & 3) - 1;
@@ -26,7 +26,7 @@ void rainbow(int16_t t) {
     }
 }
 
-void rainbow_ranges(int16_t t) {
+void rainbow_ranges(uint16_t t) {
     int phase = t;
 
     int hi = t >> 7;
@@ -67,7 +67,7 @@ void rainbow_ranges(int16_t t) {
     }
 }
 
-void purple(int16_t t) {
+void purple(uint16_t t) {
     int phase=t;
 
     for (int i = 0; i < NCOLOR/2; i++) {
@@ -90,7 +90,7 @@ void purple(int16_t t) {
 }
 
 
-void purple_but_with_hsv(int16_t t) {
+void purple_but_with_hsv(uint16_t t) {
     int phase = t;
     // just bisecting this to try to find where the purple is
     int PURPLE_RANGE = HSV_HUE_STEPS / 24;
@@ -116,7 +116,7 @@ void purple_but_with_hsv(int16_t t) {
     }
 }
 
-void symmetric_rainbow(int16_t t) {
+void symmetric_rainbow(uint16_t t) {
     static int phase = 0;
     int hi = t >> 7;
     int v = (hi & 3) - 1;
@@ -141,7 +141,7 @@ void symmetric_rainbow(int16_t t) {
     }
 }
 
-// void twinkles(int16_t t) {
+// void twinkles(uint16_t t) {
 //     int phase = t;
 //     // phase += 10;
 
@@ -173,7 +173,7 @@ static inline int lerp(int from, int to, int nstep, int step) {
     return from + (((to - from) * step) / (nstep-1));
 }
 
-void nipunn(int16_t t) {
+void nipunn(uint16_t t) {
     const int fade_nsparkles = 30;
     const int pause_nsparkles = 3;
     const int base_sparkle_nframes = 20;
@@ -255,7 +255,7 @@ void nipunn(int16_t t) {
     }
 }
 
-void tick(uint8_t mode, int16_t t) {
+void tick(uint8_t mode, uint16_t t) {
     if ((mode & 3) == 3) {
         //purple_but_with_hsv(t);
         //purple(t);

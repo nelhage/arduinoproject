@@ -4,4 +4,4 @@
 
 extern struct light colors[NCOLOR];
 
-void tick(uint8_t mode, int16_t t);
+void tick(uint8_t mode, uint16_t t);
