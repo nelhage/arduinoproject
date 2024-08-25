@@ -176,15 +176,16 @@ static inline int lerp(int from, int to, int nstep, int step) {
 void nipunn(int16_t t) {
     const int hue_a = 0;
     const int hue_b = (2 * HSV_HUE_STEPS) / 3;
-    const int sparkle_nframes = 10;
     const int fade_nsparkles = 30;
     const int pause_nsparkles = 3;
-
+    const int base_sparkle_nframes = 10;
     const int transition_nsparkles = fade_nsparkles + pause_nsparkles;
 
-    int frame_in_sparkle = t % sparkle_nframes;
-    int sparkle_no = (t / sparkle_nframes) % transition_nsparkles;
-    int transition_no = t / (sparkle_nframes * transition_nsparkles);
+    static int frame_in_sparkle = 0;
+    static int sparkle_no = 0;
+    static int transition_no = 0;
+
+    int sparkle_nframes = transition_no == 0 ? base_sparkle_nframes : 2*base_sparkle_nframes;
 
     int frac_on = sparkle_no * sparkle_no;
 
@@ -237,6 +238,16 @@ void nipunn(int16_t t) {
         colors[i].r = r;
         colors[i].g = g;
         colors[i].b = b;
+    }
+
+    frame_in_sparkle++;
+    if (frame_in_sparkle == sparkle_nframes) {
+        frame_in_sparkle = 0;
+        sparkle_no++;
+        if (sparkle_no == transition_nsparkles) {
+            sparkle_no = 0;
+            transition_no = transition_no ? 0 : 1;
+        }
     }
 }
 
