@@ -170,18 +170,17 @@ struct sparkle_state {
 struct sparkle_state is_sparkling[NCOLOR];
 
 static inline int lerp(int from, int to, int nstep, int step) {
-    return from + (((to - from) * step) / nstep);
+    return from + (((to - from) * step) / (nstep-1));
 }
 
 void nipunn(int16_t t) {
     const int hue_a = 0;
-    const int hue_b = HSV_HUE_STEPS / 2;
-    const int sparkle_nframes = 5;
-    const int fade_nsparkles = 50;
-    const int pause_nsparkles = 5;
+    const int hue_b = (2 * HSV_HUE_STEPS) / 3;
+    const int sparkle_nframes = 10;
+    const int fade_nsparkles = 30;
+    const int pause_nsparkles = 3;
 
     const int transition_nsparkles = fade_nsparkles + pause_nsparkles;
-
 
     int frame_in_sparkle = t % sparkle_nframes;
     int sparkle_no = (t / sparkle_nframes) % transition_nsparkles;
@@ -214,9 +213,21 @@ void nipunn(int16_t t) {
         case 1: {
             int prev_hue = prev ? hue_b : hue_a;
             int dst_hue = cur ? hue_b : hue_a;
+            if (frame_in_sparkle < sparkle_nframes / 2) {
+                hue = prev_hue;
+                val = lerp(255, 0, sparkle_nframes/2, frame_in_sparkle);
+            } else {
+                hue = dst_hue;
+                val = lerp(0, 255, sparkle_nframes/2, frame_in_sparkle - sparkle_nframes/2);
+            }
+            if (prev == cur) {
+                val = 255;
+            }
 
+            /*
             val = 255;
             hue = lerp(prev_hue, dst_hue, sparkle_nframes, frame_in_sparkle);
+            */
             break;
         }
         }
