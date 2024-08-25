@@ -27,7 +27,7 @@ void rainbow(uint16_t t) {
 }
 
 void rainbow_ranges(uint16_t t) {
-    int phase = t;
+    int phase = t / 2;
 
     int hi = t >> 7;
     int band = hi % 6;

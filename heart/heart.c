@@ -22,7 +22,7 @@ int main(void)
 
         tick((PINB & (0x3 << 1)) >> 1, t);
         lightit(colors, sizeof(colors));
-        _delay_ms(100);
+        _delay_ms(50);
     }
 
     return 0;

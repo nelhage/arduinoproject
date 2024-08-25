@@ -13,7 +13,7 @@
       this.config = config;
       this.tickMS = config.tickMS;
       if (this.tickMS === null) {
-        this.tickMS = 100;
+        this.tickMS = 50;
       }
       this.mode = config.mode;
       if (this.mode === null) {
@@ -85,7 +85,7 @@
                                Module._colors,
                                3*num_lights);
 
-    let settings = {tickMS: 100, mode: 3};
+    let settings = {tickMS: 50, mode: 3};
     const params = new URLSearchParams(window.location.search);
     if (params.has('tick')) {
       settings.tickMS = parseInt(params.get('tick'));
