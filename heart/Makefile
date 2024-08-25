@@ -18,4 +18,4 @@ $(WASM_OUT)/heart.js $(WASM_OUT)/heart.wasm: wasm_iface.c $(EXTRA_SRC)
 	     -O2
 
 wasm: $(WASM_OUT)/heart.wasm
-.PHONY: wasm
+.PHONY: $(WASM_OUT)/heart.wasm
