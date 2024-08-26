@@ -56,9 +56,9 @@ void tick(uint8_t mode, uint16_t t) {
     for (int i = 0; i < NDOT; i++) {
         struct arrow *a = &arrows[i];
         for (int j = 0; j < 10; j++) {
-            saturating_add(&leds[(NLED + a->x - j) % NCOLOR].r, a->r*(10 - j));
-            saturating_add(&leds[(NLED + a->x - j) % NCOLOR].g, a->g*(10 - j));
-            saturating_add(&leds[(NLED + a->x - j) % NCOLOR].b, a->b*(10 - j));
+            saturating_add(&leds[(NLED + a->x - j) % NLED].r, a->r*(10 - j));
+            saturating_add(&leds[(NLED + a->x - j) % NLED].g, a->g*(10 - j));
+            saturating_add(&leds[(NLED + a->x - j) % NLED].b, a->b*(10 - j));
         }
         a->x += a->dx;
         a->x %= NLED;
