@@ -26,19 +26,18 @@ void rainbow(uint16_t t) {
     }
 }
 
-void twinkles(uint16_t t) {
-    int phase = t;
+void ourainbowrous(uint16_t t) {
+    int phase = t; // (t*t*t)/8;
     // phase += 10;
 
     for (int i = 0; i < NLED; i++) {
-        int off = (i + 2*t) % NLED;
-        if (off < 0) {
-            off += NLED;
-        }
-        int hue = ((off) * (HSV_HUE_MAX/(NLED*5)) + phase) % HSV_HUE_MAX;
-        if (hue < 0) {
-            hue += HSV_HUE_MAX;
-        }
+        uint16_t clamped_t = t % 3000;
+        uint16_t off = (clamped_t * clamped_t)/512;
+
+        uint16_t logical_pos = (i + off) % NLED;
+
+        uint16_t hue = (2 * logical_pos * (HSV_HUE_MAX/(NLED*5)) + phase) % HSV_HUE_MAX;
+
         uint8_t r, g, b;
         fast_hsv2rgb_8bit((uint16_t)hue, 255, 128, &r, &g, &b);
         leds[i].r = r;
@@ -51,6 +50,6 @@ void tick(uint8_t mode, uint16_t t) {
     if ((mode & 3) == 3) {
         rainbow(t);
     } else if ((mode & 3) == 2) {
-        twinkles(t);
+        ourainbowrous(t);
     }
 }
