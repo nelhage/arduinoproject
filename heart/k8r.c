@@ -69,55 +69,6 @@ void rainbow_ranges(uint16_t t) {
     }
 }
 
-void purple(uint16_t t) {
-    int phase=t;
-
-    for (int i = 0; i < NLED/2; i++) {
-        int r;
-        // r wants to range from 150 to 200, back and forth
-        int R_MIN = 150;
-        int R_RANGE = 50;
-        int r_offset = (i * ((R_RANGE*4)/NLED)) % R_RANGE;
-
-        r = (uint8_t)(R_MIN + r_offset);
-        // OK SO CLEARLY these values are definitely not the r, g, and b values the led shows
-        leds[i].r = 112; // byzantium
-        leds[i].g = 41;
-        leds[i].b = 99;
-        leds[NLED-1-i].r = 207; // light violet
-        leds[NLED-1-i].g = 159;
-        leds[NLED-1-i].b = 255;
-    }
-
-}
-
-
-void purple_but_with_hsv(uint16_t t) {
-    int phase = t;
-    // just bisecting this to try to find where the purple is
-    int PURPLE_RANGE = HSV_HUE_STEPS / 24;
-    int PURPLE_MIN = HSV_HUE_STEPS * 17 / 24;
-
-    for (int i = 0; i < NLED/2; i++) {
-
-        int hue_offset = (i * (PURPLE_RANGE* 6/NLED) + phase) % PURPLE_RANGE;
-        if (hue_offset < 0) {
-            hue_offset += PURPLE_RANGE;
-        }
-
-        int hue = hue_offset + PURPLE_MIN;
-
-        uint8_t r, g, b;
-        fast_hsv2rgb_8bit((uint16_t)hue, 255, 255, &r, &g, &b);
-        leds[i].r = r;
-        leds[i].g = g;
-        leds[i].b = b;
-        leds[NLED-1-i].r = r;
-        leds[NLED-1-i].g = g;
-        leds[NLED-1-i].b = b;
-    }
-}
-
 void symmetric_rainbow(uint16_t t) {
     static int phase = 0;
     int hi = t >> 7;
@@ -202,7 +153,7 @@ void nipunn(uint16_t t) {
         int cur = is_sparkling[i].cur;
         int prev = is_sparkling[i].prev;
 
-        uint16_t hue;
+        uint16_t hue = 0;
         int val;
         switch (transition_no) {
         case 0: {
