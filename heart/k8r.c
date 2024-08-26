@@ -1,6 +1,8 @@
 #include "art.h"
 #include <stdlib.h>
 
+#include <stdio.h>
+
 #include "fast_hsv2rgb.h"
 
 
@@ -179,8 +181,8 @@ void nipunn(uint16_t t) {
     const int base_sparkle_nframes = 20;
     const int transition_nsparkles = fade_nsparkles + pause_nsparkles;
 
-    static int hue_a = 0;
-    static int hue_b = (2 * HSV_HUE_STEPS) / 3;
+    static uint16_t hue_a = 0;
+    static uint16_t hue_b = (2 * HSV_HUE_STEPS) / 3;
     static int frame_in_sparkle = 0;
     static int sparkle_no = 0;
     static int transition_no = 0;
@@ -200,9 +202,9 @@ void nipunn(uint16_t t) {
         int cur = is_sparkling[i].cur;
         int prev = is_sparkling[i].prev;
 
-        int hue;
+        uint16_t hue;
         int val;
-        switch (transition_no % 2) {
+        switch (transition_no) {
         case 0: {
             int prev_val = prev ? 255 : 0;
             int dst_val = cur ? 255 : 0;
@@ -224,11 +226,6 @@ void nipunn(uint16_t t) {
             if (prev == cur) {
                 val = 255;
             }
-
-            /*
-            val = 255;
-            hue = lerp(prev_hue, dst_hue, sparkle_nframes, frame_in_sparkle);
-            */
             break;
         }
         }
@@ -248,8 +245,14 @@ void nipunn(uint16_t t) {
             sparkle_no = 0;
             transition_no = transition_no ? 0 : 1;
             if (transition_no == 0) {
-                hue_a = (hue_a + HSV_HUE_STEPS / 6) % HSV_HUE_STEPS;
-                hue_b = (hue_b + HSV_HUE_STEPS / 6) % HSV_HUE_STEPS;
+                hue_a = (hue_a + HSV_HUE_STEPS / 8) % HSV_HUE_STEPS;
+                hue_b = (hue_b + HSV_HUE_STEPS / 8) % HSV_HUE_STEPS;
+                /*
+                uint8_t r, g, b;
+                fast_hsv2rgb_8bit(hue_a, 255, 255, &r, &g, &b);
+                printf("transition new=(%d, %d) #%0xd%02x%02x\n", hue_a, hue_b, r, g, b);
+                */
+
             }
         }
     }
