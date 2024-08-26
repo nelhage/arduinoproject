@@ -31,7 +31,7 @@ void rainbow(uint16_t t) {
 void rainbow_ranges(uint16_t t) {
     int phase = t / 2;
 
-    int hi = t >> 7;
+    int hi = t >> 9;
     int band = hi % 6;
 
     int COLOR_RANGE = HSV_HUE_STEPS / 6;
