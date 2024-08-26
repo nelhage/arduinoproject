@@ -247,12 +247,6 @@ void nipunn(uint16_t t) {
             if (transition_no == 0) {
                 hue_a = (hue_a + HSV_HUE_STEPS / 8) % HSV_HUE_STEPS;
                 hue_b = (hue_b + HSV_HUE_STEPS / 8) % HSV_HUE_STEPS;
-                /*
-                uint8_t r, g, b;
-                fast_hsv2rgb_8bit(hue_a, 255, 255, &r, &g, &b);
-                printf("transition new=(%d, %d) #%0xd%02x%02x\n", hue_a, hue_b, r, g, b);
-                */
-
             }
         }
     }
