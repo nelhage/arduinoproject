@@ -21,7 +21,7 @@ int main(void)
         t++;
 
         tick((PINB & (0x3 << 1)) >> 1, t);
-        lightit(leds, sizeof(leds));
+        lightit(leds, NLED);
         _delay_ms(50);
     }
 

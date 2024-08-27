@@ -70,7 +70,7 @@ int main(void)
                 }
             }
 
-            lightit(colors, sizeof(colors));
+            lightit(colors, sizeof(colors)/sizeof(*colors));
         }
 
         _delay_ms(100);

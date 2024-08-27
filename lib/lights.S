@@ -17,8 +17,8 @@
  * GRB; MSB first
  */
 
-.globl lightit
-lightit:
+.globl _lightit
+_lightit:
         // lightit(ptr, count)
         // ptr   == r24:r25
         // count == r22:r23
