@@ -126,6 +126,20 @@ static inline int lerp(int from, int to, int nstep, int step) {
     return from + (((to - from) * step) / (nstep-1));
 }
 
+static inline struct light lerp3(struct light from, struct light to, int nstep, int step) {
+    return (struct light){
+        .r = lerp(from.r, to.r, nstep, step),
+        .g = lerp(from.g, to.g, nstep, step),
+        .b = lerp(from.b, to.b, nstep, step),
+    };
+}
+
+struct light hsv2rgb(uint16_t hue, uint8_t sat, uint8_t val) {
+    struct light out;
+    fast_hsv2rgb_8bit(hue, sat, val, &out.r, &out.g, &out.b);
+    return out;
+}
+
 void nipunn(uint16_t t) {
     const int fade_nsparkles = 30;
     const int pause_nsparkles = 3;
@@ -149,43 +163,28 @@ void nipunn(uint16_t t) {
         }
     }
 
+    const uint8_t val = 255;
+    struct light color_a = hsv2rgb(hue_a, 255, val);
+    struct light color_b = hsv2rgb(hue_b, 255, val);
+    struct light black = {0, 0, 0};
+
     for (int i = 0; i < NLED; i++) {
         int cur = is_sparkling[i].cur;
         int prev = is_sparkling[i].prev;
 
-        uint16_t hue = 0;
-        int val;
-        switch (transition_no) {
-        case 0: {
-            int prev_val = prev ? 255 : 0;
-            int dst_val = cur ? 255 : 0;
+        struct light prev_color;
+        struct light cur_color;
 
-            hue = hue_a;
-            val = lerp(prev_val, dst_val, sparkle_nframes, frame_in_sparkle);
-            break;
-        }
-        case 1: {
-            int prev_hue = prev ? hue_b : hue_a;
-            int dst_hue = cur ? hue_b : hue_a;
-            if (frame_in_sparkle < sparkle_nframes / 2) {
-                hue = prev_hue;
-                val = lerp(255, 0, sparkle_nframes/2, frame_in_sparkle);
-            } else {
-                hue = dst_hue;
-                val = lerp(0, 255, sparkle_nframes/2, frame_in_sparkle - sparkle_nframes/2);
-            }
-            if (prev == cur) {
-                val = 255;
-            }
-            break;
-        }
+        if (transition_no == 0) {
+            prev_color = prev ? color_a : black;
+            cur_color = cur ? color_a : black;
+        } else {
+            prev_color = prev ? color_b : color_a;
+            cur_color = cur ? color_b : color_a;
         }
 
-        uint8_t r, g, b;
-        fast_hsv2rgb_8bit((uint16_t)hue, 255, val, &r, &g, &b);
-        leds[i].r = r;
-        leds[i].g = g;
-        leds[i].b = b;
+        leds[i] = lerp3(prev_color, cur_color, sparkle_nframes, frame_in_sparkle);
+        //  leds[i] = color_a;
     }
 
     frame_in_sparkle++;
