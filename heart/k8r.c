@@ -122,18 +122,6 @@ struct sparkle_state {
 
 struct sparkle_state is_sparkling[NLED];
 
-static inline int lerp(int from, int to, int nstep, int step) {
-    return from + (((to - from) * step) / (nstep-1));
-}
-
-static inline struct light lerp3(struct light from, struct light to, int nstep, int step) {
-    return (struct light){
-        .r = lerp(from.r, to.r, nstep, step),
-        .g = lerp(from.g, to.g, nstep, step),
-        .b = lerp(from.b, to.b, nstep, step),
-    };
-}
-
 struct light hsv2rgb(uint16_t hue, uint8_t sat, uint8_t val) {
     struct light out;
     fast_hsv2rgb_8bit(hue, sat, val, &out.r, &out.g, &out.b);
