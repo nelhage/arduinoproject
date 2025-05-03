@@ -8,7 +8,7 @@ WHICH_ART := .which_art
 dummy := $(shell if test -f $(WHICH_ART) && [ "$$(cat $(WHICH_ART))" == "$(ART)" ]; then :; else echo "$(ART)" > $(WHICH_ART); fi)
 
 all: heart.hex
-heart.elf: $(LIBS)
+heart.elf: $(LIBS) .which_art
 # heart.elf:: .which_art
 heart.o: CFLAGS+=-std=c11
 
