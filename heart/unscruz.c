@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include <stdio.h>
+#include <string.h>
 
 #include "fast_hsv2rgb.h"
 
@@ -19,32 +20,80 @@ int8_t led_x[NLED] = {
     62,   56,   50,   44,   38,   32,   25,   19,   13,    6
 };
 
-void sidewipe(uint16_t t) {
-    const int period = 80;
+const int16_t BLACKOUT_HUES = 120;
+const int16_t BLACKOUT_BUFFER = 40;
 
-    int local_t = (int)t % period;
-    int tphase;
-    if (local_t < period/2) {
-        tphase = lerp(0, 255, period/2, local_t);
+void sidewipe(uint16_t t) {
+    const uint16_t PERIOD = 256;
+
+    int16_t local_t = (int16_t)((t>>2) % PERIOD);
+    int16_t tphase;
+    if (local_t < PERIOD/2) {
+        tphase = lerp(0, 255, PERIOD/2, local_t);
     } else {
-        tphase = lerp(255, 0, period/2, local_t - period/2);
+        tphase = lerp(255, 0, PERIOD/2, local_t - PERIOD/2);
     }
 
+    /*
+    static uint16_t hues[NLED];
+    static uint8_t vals[NLED];
+    */
 
     for (int i = 0; i < NLED; i++) {
-        int x = led_x[i];
+        int16_t x = led_x[i];
 
-        int phase = ((8*x)/10 + tphase + 256/3);
-        int hue = (phase * (HSV_HUE_MAX/255)) % HSV_HUE_MAX;
+        int16_t phase = ((8*x)/10 + tphase + 256/3);
+        int16_t hue = (phase * (HSV_HUE_MAX/255)) % HSV_HUE_MAX;
         if (hue < 0) {
             hue += HSV_HUE_MAX;
         }
         uint8_t r, g, b;
-        fast_hsv2rgb_8bit((uint16_t)hue, 255, 255, &r, &g, &b);
+        uint8_t v = 255;
+        uint8_t in_sextant = (((uint16_t)hue) & 0xff);
+        if (in_sextant < BLACKOUT_HUES) {
+            v = 0;
+        }
+        // hues[i] = hue;
+        fast_hsv2rgb_8bit((uint16_t)hue, 255, v, &r, &g, &b);
         leds[i].r = r;
         leds[i].g = g;
         leds[i].b = b;
     }
+
+    /*
+    const int BLACK_LEDS = 2;
+    const int FADE_LEDS = 5;
+
+    memset(vals, 255, NLED);
+
+    int prev_segment = 0;
+    for (int i = 0; i < NLED; i++) {
+        int segment = hues[i] >> 8;
+        if (i != 0 && segment != prev_segment) {
+            for (int j = 0; j < (FADE_LEDS + BLACK_LEDS); j++) {
+                int v;
+                if (j < BLACK_LEDS) {
+                    v = 0;
+                } else {
+                    v = lerp(0, 255, FADE_LEDS, j-BLACK_LEDS);
+                }
+                if (i - j >= 0) {
+                    vals[i-j] = v;
+                }
+                if (i + j < NLED) {
+                    vals[i+j] = v;
+                }
+            }
+            i += FADE_LEDS;
+        }
+        prev_segment = segment;
+    }
+
+    for (int i = 0; i < NLED; i++) {
+        fast_hsv2rgb_8bit(hues[i], 255, vals[i],
+                          &leds[i].r, &leds[i].g, &leds[i].b);
+    }
+    */
 }
 
 void tick(uint8_t mode, uint16_t t) {
