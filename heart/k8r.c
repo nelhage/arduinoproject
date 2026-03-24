@@ -151,7 +151,7 @@ void nipunn(uint16_t t) {
         }
     }
 
-    const uint8_t val = 255;
+    const uint8_t val = 128;
     struct light color_a = hsv2rgb(hue_a, 255, val);
     struct light color_b = hsv2rgb(hue_b, 255, val);
     struct light black = {0, 0, 0};
