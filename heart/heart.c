@@ -24,14 +24,30 @@ void lowpower() {
 
 void setup_watchdog(uint8_t prescaler) {
     // Prescaler values: 0=16ms, 1=32ms, 2=64ms, 3=128ms, 4=250ms, 5=500ms, 6=1s, 7=2s, 8=4s, 9=8s
+    uint8_t wdtcsr_val = (1 << WDIE) | (prescaler & 7) | ((prescaler & 8) ? (1 << WDP3) : 0);
 
     MCUSR &= ~(1 << WDRF);
-    WDTCSR |= (1 << WDCE) | (1 << WDE);
-    WDTCSR = (1 << WDIE) | (prescaler & 7) | ((prescaler & 8) ? (1 << WDP3) : 0);
+
+    // Timed sequence: new value must be written within 4 cycles of
+    // setting WDCE|WDE. Use inline asm (mirroring avr-libc's
+    // wdt_enable) to guarantee the timing.
+    __asm__ __volatile__ (
+        "in __tmp_reg__,__SREG__" "\n\t"
+        "cli" "\n\t"
+        "wdr" "\n\t"
+        "sts %0, %1" "\n\t"
+        "out __SREG__,__tmp_reg__" "\n\t"
+        "sts %0, %2" "\n\t"
+        : /* no outputs */
+        : "M" (_SFR_MEM_ADDR(WDTCSR)),
+          "r" ((uint8_t)((1 << WDCE) | (1 << WDE))),
+          "r" (wdtcsr_val)
+        : "r0"
+    );
 }
 
 void sleep_tick(void) {
-    setup_watchdog(5);
+    setup_watchdog(2);
 
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 
@@ -64,8 +80,7 @@ int main(void)
 
         tick((PINB & (0x3 << 1)) >> 1, t);
         lightit(leds, NLED);
-        // sleep_tick();
-        _delay_ms(50);
+        sleep_tick();
     }
 
     return 0;
