@@ -18,7 +18,7 @@ void lowpower() {
             | _BV(PRTIM2) | _BV(PRSPI) | _BV(PRUSART0)
             | _BV(PRADC));
 
-    DIDR0 |= _BV(ADC5D) | _BV(ADC4D) | _BV(ADC3D) | _BV(ADC2D) | _BV(ADC1D) | _BV(ADC1D);
+    DIDR0 |= _BV(ADC5D) | _BV(ADC4D) | _BV(ADC3D) | _BV(ADC2D) | _BV(ADC1D) | _BV(ADC0D);
     DIDR1 |= _BV(AIN1D) | _BV(AIN0D);
 }
 
@@ -51,8 +51,11 @@ void sleep_tick(void) {
 
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 
+    sleep_enable();
+    sleep_bod_disable();
     sei();
-    sleep_mode();
+    sleep_cpu();
+    sleep_disable();
     cli();
 
     wdt_disable();
