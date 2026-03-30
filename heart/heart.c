@@ -51,11 +51,8 @@ void sleep_tick(void) {
 
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 
-    sleep_enable();
-    sleep_bod_disable();
     sei();
-    sleep_cpu();
-    sleep_disable();
+    sleep_mode();
     cli();
 
     wdt_disable();
