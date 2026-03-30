@@ -13,7 +13,7 @@
       this.config = config;
       this.tickMS = config.tickMS;
       if (this.tickMS === null) {
-        this.tickMS = 50;
+        this.tickMS = 64;
       }
       this.mode = config.mode;
       if (this.mode === null) {
