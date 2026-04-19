@@ -1,7 +1,22 @@
+PROFILE ?= diecimila
+
+ifeq ($(PROFILE),diecimila)
+MCU_TARGET = atmega168
+AVRDUDE_PART = m168
+AVRDUDE_BAUD = 19200
+DEVICE_GLOB_DARWIN = /dev/tty.usbserial-*
+else ifeq ($(PROFILE),uno)
+MCU_TARGET = atmega328p
+AVRDUDE_PART = m328p
+AVRDUDE_BAUD = 115200
+DEVICE_GLOB_DARWIN = /dev/tty.usbmodem*
+else
+$(error Unknown PROFILE '$(PROFILE)'; expected 'diecimila' or 'uno')
+endif
+
 OPTIMIZE = -Os
 DEFS =
 LIBS =
-MCU_TARGET = atmega168
 F_CPU=16000000L
 CC = avr-gcc
 TOP := $(dir $(lastword $(MAKEFILE_LIST)))
@@ -10,7 +25,7 @@ ASFLAGS = -mmcu=$(MCU_TARGET) -I. -x assembler-with-cpp
 LDFLAGS =
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
-DEVICE = $(if $(findstring darwin,$(MAKE_HOST)),$(wildcard /dev/tty.usbserial-*),/dev/ttyUSB0)
+DEVICE = $(if $(findstring darwin,$(MAKE_HOST)),$(wildcard $(DEVICE_GLOB_DARWIN)),/dev/ttyUSB0)
 
 %.elf: %.o $(LIBS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.o,$^)
@@ -23,6 +38,6 @@ clean:
 
 upload-%: %.hex
 	screen -S arduino -X kill || :
-	avrdude -c arduino -p m168 -P $(DEVICE) -b 19200 -U "flash:w:$<"
+	avrdude -c arduino -p $(AVRDUDE_PART) -P $(DEVICE) -b $(AVRDUDE_BAUD) -U "flash:w:$<"
 
 .PRECIOUS: %.o %.elf
