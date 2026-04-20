@@ -27,12 +27,21 @@ OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 DEVICE = $(if $(findstring darwin,$(MAKE_HOST)),$(wildcard $(DEVICE_GLOB_DARWIN)),/dev/ttyUSB0)
 
-%.elf: %.o $(LIBS)
+STAMPS := .makevar
+
+.PHONY: force
+$(STAMPS)/%: force | $(STAMPS)
+	@echo '$($*)' | cmp -s - $@ 2>/dev/null || echo '$($*)' > $@
+
+$(STAMPS):
+	@mkdir -p $@
+
+%.elf: %.o $(LIBS) $(STAMPS)/CFLAGS $(STAMPS)/LDFLAGS
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.o,$^)
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak *.hex *.elf
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
-%.hex: %.elf
+%.hex: %.elf $(STAMPS)/MCU_TARGET
 	avr-size --mcu=$(MCU_TARGET) -C "$<"
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 

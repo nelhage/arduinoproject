@@ -32,8 +32,6 @@ Connect with `screen -S arduino /dev/tty.usbmodem… <baud>` (exit `Ctrl-A k`). 
 - `lights.S` + `inc/lights.h` — hand-written AVR assembly for bit-banging addressable LEDs; used by `heart/` and `leds/`.
 - `fast_hsv2rgb_8bit.c` + `inc/fast_hsv2rgb.h` — HSV→RGB conversion for LED effects.
 
-Object files (`*.o`) are checked in alongside sources in `lib/` but are rebuilt when `PROFILE` changes the MCU. If you switch profiles, `rm lib/*.o` before building — the Makefile doesn't track MCU as a dependency.
-
 ## `heart/` — dual-target (AVR + WASM)
 
 `heart/` is unusual: the same art code compiles to both AVR firmware and a WebAssembly module for browser preview.

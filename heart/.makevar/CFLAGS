@@ -1,0 +1,1 @@
+-g -Wall -Os -mmcu=atmega168  -DF_CPU=16000000L -I../lib//inc
