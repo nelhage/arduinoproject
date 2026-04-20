@@ -8,6 +8,19 @@
 
 static FILE uart_output;
 
+static void adc_init(void)
+{
+  ADMUX = _BV(REFS0) | _BV(ADLAR);
+  ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
+}
+
+static uint8_t adc_read(void)
+{
+  ADCSRA |= _BV(ADSC);
+  loop_until_bit_is_clear(ADCSRA, ADSC);
+  return ADCH;
+}
+
 int main(void)
 {
   DDRB |= _BV(PB5);
@@ -16,11 +29,12 @@ int main(void)
   uart_setup_stdio(NULL, &uart_output);
   stdout = &uart_output;
 
-  unsigned long i = 0;
+  adc_init();
+
   while (1) {
     PORTB ^= _BV(PB5);
-    printf("hello, world! %lu\n", i++);
-    _delay_ms(500);
+    printf("ADC0: %u\n", adc_read());
+    _delay_ms(1000);
   }
 
   return 0;
