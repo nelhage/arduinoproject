@@ -6,7 +6,12 @@
 
 #include "serial.h"
 
+#include "lights.h"
+
 static FILE uart_output;
+
+#define NLED 120
+struct light leds[NLED];
 
 static void adc_init(void)
 {
@@ -23,13 +28,19 @@ static uint8_t adc_read(void)
 
 int main(void)
 {
-  DDRB |= _BV(PB5);
+  DDRB |= _BV(PB5) | _BV(PB0);
 
   uart_init();
   uart_setup_stdio(NULL, &uart_output);
   stdout = &uart_output;
 
   adc_init();
+
+  int i;
+  for (i = 0; i < 10; i ++) {
+      leds[i].r = 100;
+  }
+  lightit(leds, NLED);
 
   while (1) {
     PORTB ^= _BV(PB5);

@@ -28,19 +28,26 @@ OBJDUMP = avr-objdump
 DEVICE = $(if $(findstring darwin,$(MAKE_HOST)),$(wildcard $(DEVICE_GLOB_DARWIN)),/dev/ttyUSB0)
 
 STAMPS := .makevar
+LIB_BUILD := build
 
 .PHONY: force
 $(STAMPS)/%: force | $(STAMPS)
 	@echo '$($*)' | cmp -s - $@ 2>/dev/null || echo '$($*)' > $@
 
-$(STAMPS):
+$(STAMPS) $(LIB_BUILD):
 	@mkdir -p $@
+
+$(LIB_BUILD)/%.o: $(TOP)%.c $(STAMPS)/CFLAGS | $(LIB_BUILD)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(LIB_BUILD)/%.o: $(TOP)%.S $(STAMPS)/CFLAGS | $(LIB_BUILD)
+	$(CC) $(ASFLAGS) -c -o $@ $<
 
 %.elf: %.o $(LIBS) $(STAMPS)/CFLAGS $(STAMPS)/LDFLAGS
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.o,$^)
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak *.hex *.elf
-	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
+	rm -rf *.lst *.map $(LIB_BUILD) $(STAMPS) $(EXTRA_CLEAN_FILES)
 %.hex: %.elf $(STAMPS)/MCU_TARGET
 	avr-size --mcu=$(MCU_TARGET) -C "$<"
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@

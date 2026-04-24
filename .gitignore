@@ -5,3 +5,4 @@
 *.srec
 *.o
 *.map
+.makevar/

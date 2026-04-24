@@ -1,12 +1,12 @@
+all: heart.hex
+
 include ../lib/Makefile.common
 
 ART = art
-EXTRA_SRC=../lib/fast_hsv2rgb_8bit.c $(ART).c
-LIBS = ../lib/lights.o $(patsubst %.c,%.o,$(EXTRA_SRC))
+EXTRA_SRC = ../lib/fast_hsv2rgb_8bit.c $(ART).c
+LIBS = $(LIB_BUILD)/lights.o $(LIB_BUILD)/fast_hsv2rgb_8bit.o $(ART).o
 
-all: heart.hex
 heart.elf: $(LIBS) $(STAMPS)/ART
-# heart.elf:: .which_art
 heart.o: CFLAGS+=-std=c11
 
 WASM_OUT := web/wasm

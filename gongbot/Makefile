@@ -1,10 +1,12 @@
-gongbot.elf: ../lib/serial.o fft/ffft.o
+all: gongbot.hex
 
 include ../lib/Makefile.common
 
 CFLAGS  += -mcall-prologues
 
-EXTRA_CLEAN_FILES=*/ffft.o ../lib/serial.o
+gongbot.elf: $(LIB_BUILD)/serial.o fft/ffft.o
+
+EXTRA_CLEAN_FILES=*/ffft.o
 
 gongbot.o: fft/ffft.h
 fft/ffft.o: fft/ffft.h

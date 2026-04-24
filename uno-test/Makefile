@@ -2,7 +2,9 @@ PROFILE = uno
 
 all: hello.hex
 
-hello.elf: ../lib/serial.o
-.PRECIOUS: hello.o
-
 include ../lib/Makefile.common
+
+LIBS := $(LIB_BUILD)/lights.o $(LIB_BUILD)/fast_hsv2rgb_8bit.o
+
+hello.elf: $(LIB_BUILD)/serial.o $(LIBS)
+.PRECIOUS: hello.o

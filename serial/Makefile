@@ -1,7 +1,6 @@
 all: serial.hex
 
-serial.elf: ../lib/serial.o
-.PRECIOUS: serial.o
-
 include ../lib/Makefile.common
 
+serial.elf: $(LIB_BUILD)/serial.o
+.PRECIOUS: serial.o
