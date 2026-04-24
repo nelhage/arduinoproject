@@ -1,9 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(make *)",
+      "Bash(make)",
+      "Bash(make upload-hello *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit -m ' *)",
+      "Bash(make clean *)",
+      "Bash(avr-objdump *)"
     ]
   }
 }
