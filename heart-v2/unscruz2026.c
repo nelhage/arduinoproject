@@ -37,22 +37,26 @@ void mode_rainbow_ranges(uint16_t t, uint8_t s1, uint8_t s2) {
 }
 
 void mode_ourainbowrous(uint16_t t, uint8_t s1, uint8_t s2) {
-    int phase = t; // (t*t*t)/8;
+    int phase = t;
+    static int state = 0; // (t*t*t)/8;
+    int speed = 100 + s1 * 20;
+
+    state += speed;
     // phase += 10;
 
+    uint16_t off = state / 512;
+
     for (int i = 0; i < NLED; i++) {
+        /*
         uint16_t clamped_t = t % 3000;
         uint16_t off = (clamped_t * clamped_t)/512;
+        */
 
         uint16_t logical_pos = (i + off) % NLED;
 
         uint16_t hue = (2 * logical_pos * (HSV_HUE_MAX/(NLED*5)) + phase) % HSV_HUE_MAX;
 
-        uint8_t r, g, b;
-        fast_hsv2rgb_8bit((uint16_t)hue, 255, 128, &r, &g, &b);
-        leds[i].r = r;
-        leds[i].g = g;
-        leds[i].b = b;
+        leds[i] = hsv2rgb((uint16_t)hue, 255, s2);
     }
 }
 
