@@ -1,4 +1,5 @@
 #include "lights.h"
+#include "fast_hsv2rgb.h"
 
 #define NLED 120
 
@@ -17,4 +18,10 @@ static inline struct light lerp3(struct light from, struct light to, int16_t nst
         .g = lerp(from.g, to.g, nstep, step),
         .b = lerp(from.b, to.b, nstep, step),
     };
+}
+
+static inline struct light hsv2rgb(uint16_t hue, uint8_t sat, uint8_t val) {
+    struct light out;
+    fast_hsv2rgb_8bit(hue, sat, val, &out.r, &out.g, &out.b);
+    return out;
 }
