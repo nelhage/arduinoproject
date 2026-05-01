@@ -1,3 +1,4 @@
+PROFILE := uno
 all: heart.hex
 
 include ../lib/Makefile.common
