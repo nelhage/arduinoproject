@@ -23,6 +23,9 @@
       this.knobs = Array.prototype.slice.apply(
         document.getElementById('knobs').getElementsByTagName('input')
       );
+      for (let i = 0; i < 3; i++) {
+        this.knobs[i].valueAsNumber = this.config.knobs[i];
+      }
     }
 
     renderHtml(container) {
@@ -70,11 +73,20 @@
       };
     }
 
+    update_url(knobs) {
+      let params = new URLSearchParams(window.location.search);
+      params.set('s0', knobs[0]);
+      params.set('s1', knobs[1]);
+      params.set('s2', knobs[2]);
+      window.history.replaceState(null, '', "?" + params.toString());
+    }
+
     async start() {
       while (true) {
         this.clock += 1;
         const knobs = this.knobs.map((el) => el.valueAsNumber);
         Module._tick(this.clock & 0xffff, knobs[0], knobs[1], knobs[2]);
+        this.update_url(knobs);
         this.refresh();
         await sleep(this.tickMS);
       }
@@ -96,6 +108,16 @@
     }
     if (params.has('mode')) {
       settings.mode = parseInt(params.get('mode'));
+    }
+    settings.knobs = [0, 0, 0];
+    if (params.has('s0')) {
+      settings.knobs[0] = parseInt(params.get('s0'));
+    }
+    if (params.has('s1')) {
+      settings.knobs[1] = parseInt(params.get('s1'));
+    }
+    if (params.has('s2')) {
+      settings.knobs[2] = parseInt(params.get('s2'));
     }
 
     lights = new Lights(rgb, settings);
