@@ -2,7 +2,7 @@ all: heart.hex
 
 include ../lib/Makefile.common
 
-ART = art
+ART = unscruz2026
 EXTRA_SRC = ../lib/fast_hsv2rgb_8bit.c $(ART).c
 LIBS = $(LIB_BUILD)/lights.o $(LIB_BUILD)/fast_hsv2rgb_8bit.o $(ART).o
 
