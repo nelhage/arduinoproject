@@ -4,11 +4,10 @@
 void mode_rainbow_ranges(uint16_t t, uint8_t s1, uint8_t s2) {
     int phase = t / 2;
 
-    int hi = t >> 9;
-    int band = hi % 6;
-
     int COLOR_RANGE = HSV_HUE_STEPS / 6;
-    int COLOR_MIN = HSV_HUE_STEPS * band / 6;
+    int COLOR_MIN = (s1 * HSV_HUE_STEPS)/256;
+
+    uint8_t v = s2;
 
     int nslice = 12;
     int col_per_slice = NLED/nslice;
@@ -30,15 +29,10 @@ void mode_rainbow_ranges(uint16_t t, uint8_t s1, uint8_t s2) {
         }
 
         int hue = hue_offset + COLOR_MIN;
+        struct light color = hsv2rgb(hue, 255, v);
 
-        uint8_t r, g, b;
-        fast_hsv2rgb_8bit((uint16_t)hue, 255, 255, &r, &g, &b);
-        leds[i].r = r;
-        leds[i].g = g;
-        leds[i].b = b;
-        leds[NLED-1-i].r = r;
-        leds[NLED-1-i].g = g;
-        leds[NLED-1-i].b = b;
+        leds[i] = color;
+        leds[NLED-1-i] = color;
     }
 }
 
