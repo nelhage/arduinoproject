@@ -20,6 +20,9 @@
         this.mode = 3;
       }
       this.clock = 0;
+      this.knobs = Array.prototype.slice.apply(
+        document.getElementById('knobs').getElementsByTagName('input')
+      );
     }
 
     renderHtml(container) {
@@ -70,7 +73,8 @@
     async start() {
       while (true) {
         this.clock += 1;
-        Module._tick(this.mode, this.clock & 0xffff);
+        const knobs = this.knobs.map((el) => el.valueAsNumber);
+        Module._tick(this.clock & 0xffff, knobs[0], knobs[1], knobs[2]);
         this.refresh();
         await sleep(this.tickMS);
       }
