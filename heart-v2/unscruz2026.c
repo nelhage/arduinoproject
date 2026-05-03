@@ -67,19 +67,41 @@ struct sparkle_state {
 
 struct sparkle_state is_sparkling[NLED];
 
+enum transition {
+    BLACK_TO_A,
+    A_TO_B,
+    B_TO_BLACK,
+    N_TRANSITIONS,
+};
+
 void mode_nipunn(uint16_t t, uint8_t s1, uint8_t s2) {
-    const int fade_nsparkles = 30;
-    const int pause_nsparkles = 3;
+    const int fade_nsparkles = 20;
+    const int pause_nsparkles = 2;
     const int base_sparkle_nframes = 20;
     const int transition_nsparkles = fade_nsparkles + pause_nsparkles;
+
+    uint16_t hue_adjust = ((uint16_t)s1)*6;
 
     static uint16_t hue_a = 0;
     static uint16_t hue_b = (2 * HSV_HUE_STEPS) / 3;
     static int frame_in_sparkle = 0;
     static int sparkle_no = 0;
-    static int transition_no = 0;
+    static enum transition cur_transition = 0;
 
-    int sparkle_nframes = transition_no == 0 ? base_sparkle_nframes : 2*base_sparkle_nframes;
+    int sparkle_nframes;
+    switch (cur_transition) {
+    case BLACK_TO_A:
+        sparkle_nframes = base_sparkle_nframes;
+        break;
+    case A_TO_B:
+        sparkle_nframes = 2*base_sparkle_nframes;
+        break;
+    case B_TO_BLACK:
+        sparkle_nframes = base_sparkle_nframes/4;
+        break;
+    default:
+        __builtin_unreachable();
+    }
 
     int frac_on = sparkle_no * sparkle_no;
 
@@ -90,25 +112,39 @@ void mode_nipunn(uint16_t t, uint8_t s1, uint8_t s2) {
         }
     }
 
-    const uint8_t val = 128;
-    struct light color_a = hsv2rgb(hue_a, 255, val);
-    struct light color_b = hsv2rgb(hue_b, 255, val);
+    const uint8_t val = s2 >> 1;
+    struct light color_a =
+        hsv2rgb((hue_a+hue_adjust)%HSV_HUE_MAX, 255, val);
+    struct light color_b =
+        hsv2rgb((hue_b+hue_adjust)%HSV_HUE_MAX, 255, val);
     struct light black = {0, 0, 0};
+
+    struct light from, to;
+
+    switch (cur_transition) {
+    case BLACK_TO_A:
+        from = black;
+        to = color_a;
+        break;
+    case A_TO_B:
+        from = color_a;
+        to = color_b;
+        break;
+    case B_TO_BLACK:
+        from = color_b;
+        to = black;
+        break;
+    default:
+        __builtin_unreachable();
+    }
+
 
     for (int i = 0; i < NLED; i++) {
         int cur = is_sparkling[i].cur;
         int prev = is_sparkling[i].prev;
+        struct light prev_color = prev ? to : from;
+        struct light cur_color = cur ? to : from;
 
-        struct light prev_color;
-        struct light cur_color;
-
-        if (transition_no == 0) {
-            prev_color = prev ? color_a : black;
-            cur_color = cur ? color_a : black;
-        } else {
-            prev_color = prev ? color_b : color_a;
-            cur_color = cur ? color_b : color_a;
-        }
 
         leds[i] = lerp3(prev_color, cur_color, sparkle_nframes, frame_in_sparkle);
         //  leds[i] = color_a;
@@ -120,8 +156,9 @@ void mode_nipunn(uint16_t t, uint8_t s1, uint8_t s2) {
         sparkle_no++;
         if (sparkle_no == transition_nsparkles) {
             sparkle_no = 0;
-            transition_no = transition_no ? 0 : 1;
-            if (transition_no == 0) {
+            cur_transition += 1;
+            if (cur_transition == N_TRANSITIONS) {
+                cur_transition = BLACK_TO_A;
                 hue_a = (hue_a + HSV_HUE_STEPS / 8) % HSV_HUE_STEPS;
                 hue_b = (hue_b + HSV_HUE_STEPS / 8) % HSV_HUE_STEPS;
             }
